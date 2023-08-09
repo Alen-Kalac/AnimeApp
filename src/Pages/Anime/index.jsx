@@ -79,7 +79,12 @@ function AnimePage() {
               <option value='adventure'>Adventure</option>
               <option value='action'>Action</option>
               <option value='fantasy'>Fantasy</option>
-              {/* Other options */}
+              <option value='crime'>Crime</option>
+              <option value='drama'>Drama</option>
+              <option value='romance'>Romance</option>
+              <option value='supernatural'>Supernatural</option>
+              <option value='magic'>Magic</option>
+              <option value='horor'>Horor</option>
             </select>
           </div>
           <div className='filter'>
