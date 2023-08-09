@@ -7,37 +7,55 @@ import { Link } from 'react-router-dom';
 function AnimePage() {
   const [animeList, setAnimeList] = useState([]);
   const [offset, setOffset] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [uniqueAnimeIds, setUniqueAnimeIds] = useState(new Set()); // Keep track of unique anime IDs
+  const defaultCategory = 'action';
+
   const limit = 10;
-  const threshold = 200; // Threshold to trigger fetching more anime (in pixels)
+  const threshold = 200;
 
   useEffect(() => {
-    const fetchAnimeByGenre = async () => {
+    const fetchAnimeByCategory = async () => {
       try {
+        const categoryToFetch = selectedCategory || defaultCategory;
         const response = await axios.get(
-          'https://kitsu.io/api/edge/anime',
-          {
-            params: {
-              'filter[genres]': 'action',
-              'sort': 'popularityRank',
-              'page[offset]': offset,
-            },
-          }
+          `https://kitsu.io/api/edge/anime?filter[categories]=${categoryToFetch}&sort=popularityRank&page[offset]=${offset}`
         );
 
-        setAnimeList((prevAnimeList) => [...prevAnimeList, ...response.data.data]);
+        const filteredAnimeList = searchInput
+          ? response.data.data.filter(anime =>
+              anime.attributes.canonicalTitle.toLowerCase().startsWith(searchInput.toLowerCase())
+            )
+          : response.data.data;
+
+        const newAnimeList = filteredAnimeList.filter(anime => !uniqueAnimeIds.has(anime.id));
+        setAnimeList((prevAnimeList) => [...prevAnimeList, ...newAnimeList]);
+        newAnimeList.forEach(anime => uniqueAnimeIds.add(anime.id)); // Add new IDs to the set
       } catch (error) {
         console.error('Error fetching anime:', error);
       }
     };
 
-    fetchAnimeByGenre();
-  }, [offset]);
+    fetchAnimeByCategory();
+  }, [selectedCategory, offset, searchInput, uniqueAnimeIds]);
+
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+    setOffset(0);
+    setAnimeList([]);
+    setUniqueAnimeIds(new Set()); // Reset unique anime IDs when changing category
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchInput(event.target.value);
+    setOffset(0);
+    setAnimeList([]);
+    setUniqueAnimeIds(new Set()); // Reset unique anime IDs when changing search
+  };
 
   const handleScroll = () => {
-    if (
-      window.innerHeight + window.scrollY >=
-      document.body.scrollHeight - threshold
-    ) {
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - threshold) {
       setOffset((prevOffset) => prevOffset + limit);
     }
   };
@@ -52,29 +70,29 @@ function AnimePage() {
       <div className='anime-full-page'>
         <div className='upper'>
           <div className='list'>
-            <select name='Choose a category'>
-              <option value=''>Choose a category</option>
-              <option value='Adventure'>Adventure</option>
-              <option value='Action'>Action</option>
-              <option value='Fantasy'>Fantasy</option>
-              <option value='Crime'>Crime</option>
-              <option value='Drama'>Drama</option>
-              <option value='Romance'>Romance</option>
-              <option value='Supernatural'>Supernatural</option>
-              <option value='Magic'>Magic</option>
-              <option value='Horror'>Horror</option>
+            <select name='Choose a category' onChange={handleCategoryChange}>
+            <option value=''>Choose a category</option>
+              <option value='adventure'>Adventure</option>
+              <option value='action'>Action</option>
+              <option value='fantasy'>Fantasy</option>
             </select>
           </div>
           <div className='filter'>
             <label>
               <AiOutlineSearch />
-              <input type='text' className='search' placeholder='Search' />
+              <input
+                type='text'
+                className='search'
+                placeholder='Search'
+                value={searchInput}
+                onChange={handleSearchChange} // Call handleSearchChange on input change
+              />
             </label>
           </div>
         </div>
 
         <div className='cards'>
-        {animeList.map((anime) => (
+          {animeList.map((anime) => (
             <Link key={anime.id} to={`/anime/${anime.id}`} className='card-link'>
               <div className='card'>
                 <img src={anime.attributes.posterImage.original} alt={anime.attributes.canonicalTitle} />
