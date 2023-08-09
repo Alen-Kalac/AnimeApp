@@ -1,97 +1,125 @@
-import { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './index.scss'
+import './index.scss';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
 
 function MangaPage() {
   const [mangaList, setMangaList] = useState([]);
   const [offset, setOffset] = useState(0);
-  const limit = 10; // Number of manga to fetch per request
-  const threshold = 200; // Threshold to trigger fetching more anime (in pixels)
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [uniqueMangaIds, setUniqueMangaIds] = useState(new Set());
+  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const defaultCategory = 'action';
+
+  const limit = 10;
+  const threshold = 200;
 
   useEffect(() => {
-    // Function to fetch manga by genre and sort by popularity
-    const fetchMangaByGenre = async () => {
+    const fetchMangaByCategory = async () => {
       try {
+        setIsLoading(true); // Set loading state when fetching data
+
+        const categoryToFetch = selectedCategory || defaultCategory;
         const response = await axios.get(
-          'https://kitsu.io/api/edge/manga',
-          {
-            params: {
-              'filter[genres]': "action", // Sortiranje po Zanru
-              'sort': 'popularityRank', // Sortiranje po popularnosti
-              'page[offset]': offset, // Broj manga/mangi po stranici
-            },
-          }
+          `https://kitsu.io/api/edge/manga?filter[categories]=${categoryToFetch}&sort=popularityRank&page[offset]=${offset}`
         );
 
-        setMangaList((prevMangaList) => [...prevMangaList, ...response.data.data]);
+        const filteredMangaList = searchInput
+          ? response.data.data.filter(manga =>
+              manga.attributes.canonicalTitle.toLowerCase().startsWith(searchInput.toLowerCase())
+            )
+          : response.data.data;
+
+        const newMangaList = filteredMangaList.filter(manga => !uniqueMangaIds.has(manga.id));
+        setMangaList((prevMangaList) => [...prevMangaList, ...newMangaList]);
+        newMangaList.forEach(manga => uniqueMangaIds.add(manga.id));
+        setIsLoading(false); // Content fetched, loading is done
       } catch (error) {
-        console.error('Error fetching anime:', error);
+        console.error('Error fetching manga:', error);
       }
     };
 
-    fetchMangaByGenre();
-  }, [offset]);
+    fetchMangaByCategory();
+  }, [selectedCategory, offset, searchInput, uniqueMangaIds]);
+
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+    setOffset(0);
+    setMangaList([]);
+    setUniqueMangaIds(new Set());
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchInput(event.target.value);
+    setOffset(0);
+    setMangaList([]);
+    setUniqueMangaIds(new Set());
+  };
 
   const handleScroll = () => {
-    if (
-      window.innerHeight + window.scrollY >=
-      document.body.scrollHeight - threshold
-    ) {
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - threshold) {
       setOffset((prevOffset) => prevOffset + limit);
     }
   };
-
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-
   return (
     <>
-    <div className='manga-full-page'>
+      <div className='manga-full-page'>
         <div className='upper'>
           <div className='list'>
-            <select name='Choose a category'>
+            <select name='Choose a category' onChange={handleCategoryChange}>
               <option value=''>Choose a category</option>
-              <option value='Adventure'>Adventure</option>
-              <option value='Action'>Action</option>
-              <option value='Fantasy'>Fantasy</option>
-              <option value='Crime'>Crime</option>
-              <option value='Drama'>Drama</option>
-              <option value='Romance'>Romance</option>
-              <option value='Supernatural'>Supernatural</option>
-              <option value='Magic'>Magic</option>
-              <option value='Horror'>Horror</option>
+              <option value='adventure'>Adventure</option>
+              <option value='action'>Action</option>
+              <option value='fantasy'>Fantasy</option>
+              {/* Other options */}
             </select>
           </div>
           <div className='filter'>
             <label>
               <AiOutlineSearch />
-              <input type='text' className='search' placeholder='Search' />
+              <input
+                type='text'
+                className='search'
+                placeholder='Search'
+                value={searchInput}
+                onChange={handleSearchChange}
+              />
             </label>
           </div>
         </div>
 
         <div className='cards'>
-        {mangaList.map((anime) => (
-            <Link key={anime.id} to={`/anime/${anime.id}`} className='card-link'>
-              <div className='card'>
-                <img src={anime.attributes.posterImage.original} alt={anime.attributes.canonicalTitle} />
-                <div className="desc">
-                  <p className='title'>{anime.attributes.canonicalTitle}</p>
-                  <p className='click'>Click to see more</p>
+          {isLoading ? (
+           <div className="bouncing-loader">
+           <div></div>
+           <div></div>
+           <div></div>
+         </div>
+          ) : (
+            mangaList.map((manga) => (
+              <Link key={manga.id} to={`/manga/${manga.id}`} className='card-link'>
+                <div className='card'>
+                  <img src={manga.attributes.posterImage.original} alt={manga.attributes.canonicalTitle} />
+                  <div className="desc">
+                    <p className='title'>{manga.attributes.canonicalTitle}</p>
+                    <p className='click'>Click to see more</p>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ))
+          )}
         </div>
       </div>
     </>
-  )
+  );
 }
 
-export default MangaPage
+export default MangaPage;
