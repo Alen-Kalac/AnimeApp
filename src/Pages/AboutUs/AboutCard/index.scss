@@ -1,0 +1,42 @@
+.about-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(44, 43, 43, 0.247);
+    border-radius: 15px;
+    width: 300px;
+    text-align: center;
+
+    &:hover {
+        transform: scale(1.1);
+        transition: 0.3s;
+        cursor: pointer;
+    }
+    img {
+        height: 150px;
+        width: 150px;
+        border-radius: 50%;
+        margin-bottom: 20px;
+        margin-top: 20px;
+        object-fit: cover;
+    }
+    .about-card-name {
+        margin-bottom: 20px;
+    }
+    .about-card-mini-description{
+        margin-bottom: 20px;
+    }
+    .about-card-description {
+        margin-bottom: 30px;
+    }
+    .icons {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+
+        a{
+            height: 30px;
+            font-size: 20px;
+        }
+    }
+}
