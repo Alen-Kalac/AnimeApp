@@ -8,6 +8,7 @@ import AboutUsPage from './Pages/AboutUs'
 import FavoritesPage from './Pages/Favorites'
 import MangaPage from './Pages/Manga'
 import SideBar from './Components/Sidebar'
+import AnimeDetailsPage from './Pages/AnimeDetailsPage'
 function App() {
 
   return (
@@ -22,6 +23,8 @@ function App() {
     <Route path='/manga' element={<MangaPage/>}/>
     <Route path='/favorites' element={<FavoritesPage/>}/>
     <Route path='/about-us' element={<AboutUsPage/>}/>
+    <Route path="/anime/:id" element={<AnimeDetailsPage />} />
+
     </Routes>
     <Footer/>
     </div>
