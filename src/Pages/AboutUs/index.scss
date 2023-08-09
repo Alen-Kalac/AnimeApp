@@ -1,0 +1,30 @@
+.about-us-full-page {
+    width: 100%;
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 30px;
+    .container {
+       width: 90%;
+       display: grid;
+       grid-template-columns: auto auto auto;
+       row-gap: 30px;
+       padding: 5vh 0;
+       margin-bottom: 20px;
+
+       div {
+        height: 60vh;
+        padding: 0 20px;
+       }
+    }
+    .under-container {
+        display: flex;
+        justify-content: space-around;
+        width: 80%;
+        div {
+            padding: 0 20px;
+        }
+    }
+}
