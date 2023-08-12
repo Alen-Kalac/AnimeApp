@@ -1,11 +1,11 @@
+import React from "react";
 
-
-const AnimeDetailsPage = () => {
+function AnimeDetailsPage({ anime }) {
   return (
-    <div>
-      ANIME KARTICA OTVORENA
+    <div className='anime-details'>
+      AAAAAAAAAAAAAA
     </div>
-  )
+  );
 }
 
-export default AnimeDetailsPage
+export default AnimeDetailsPage;

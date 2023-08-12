@@ -24,7 +24,6 @@ function App() {
     <Route path='/favorites' element={<FavoritesPage/>}/>
     <Route path='/about-us' element={<AboutUsPage/>}/>
     <Route path="/anime/:id" element={<AnimeDetailsPage />} />
-
     </Routes>
     <Footer/>
     </div>
