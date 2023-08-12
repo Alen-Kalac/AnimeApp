@@ -9,8 +9,7 @@ function AnimePage() {
   const [offset, setOffset] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [searchInput, setSearchInput] = useState('');
-  const [uniqueAnimeIds, setUniqueAnimeIds] = useState(new Set());
-  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [uniqueAnimeIds, setUniqueAnimeIds] = useState(new Set()); // Keep track of unique anime IDs
   const defaultCategory = 'action';
 
   const limit = 10;
@@ -32,8 +31,7 @@ function AnimePage() {
 
         const newAnimeList = filteredAnimeList.filter(anime => !uniqueAnimeIds.has(anime.id));
         setAnimeList((prevAnimeList) => [...prevAnimeList, ...newAnimeList]);
-        newAnimeList.forEach(anime => uniqueAnimeIds.add(anime.id));
-        setIsLoading(false); // Content fetched, loading is done
+        newAnimeList.forEach(anime => uniqueAnimeIds.add(anime.id)); // Add new IDs to the set
       } catch (error) {
         console.error('Error fetching anime:', error);
       }
@@ -46,16 +44,14 @@ function AnimePage() {
     setSelectedCategory(event.target.value);
     setOffset(0);
     setAnimeList([]);
-    setUniqueAnimeIds(new Set());
-    setIsLoading(true); // Reset loading state when changing category
+    setUniqueAnimeIds(new Set()); // Reset unique anime IDs when changing category
   };
 
   const handleSearchChange = (event) => {
     setSearchInput(event.target.value);
     setOffset(0);
     setAnimeList([]);
-    setUniqueAnimeIds(new Set());
-    setIsLoading(true); // Reset loading state when changing search
+    setUniqueAnimeIds(new Set()); // Reset unique anime IDs when changing search
   };
 
   const handleScroll = () => {
@@ -75,16 +71,10 @@ function AnimePage() {
         <div className='upper'>
           <div className='list'>
             <select name='Choose a category' onChange={handleCategoryChange}>
-              <option value=''>Choose a category</option>
+            <option value=''>Choose a category</option>
               <option value='adventure'>Adventure</option>
               <option value='action'>Action</option>
               <option value='fantasy'>Fantasy</option>
-              <option value='crime'>Crime</option>
-              <option value='drama'>Drama</option>
-              <option value='romance'>Romance</option>
-              <option value='supernatural'>Supernatural</option>
-              <option value='magic'>Magic</option>
-              <option value='horor'>Horor</option>
             </select>
           </div>
           <div className='filter'>
@@ -95,32 +85,31 @@ function AnimePage() {
                 className='search'
                 placeholder='Search'
                 value={searchInput}
-                onChange={handleSearchChange}
+                onChange={handleSearchChange} // Call handleSearchChange on input change
               />
             </label>
           </div>
         </div>
 
         <div className='cards'>
-          {isLoading ? (
-            <div className="bouncing-loader">
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
-          ) : (
-            animeList.map((anime) => (
-              <Link key={anime.id} to={`/anime/${anime.id}`} className='card-link'>
-                <div className='card'>
-                  <img src={anime.attributes.posterImage.original} alt={anime.attributes.canonicalTitle} />
-                  <div className="desc">
-                    <p className='title'>{anime.attributes.canonicalTitle}</p>
-                    <p className='click'>Click to see more</p>
-                  </div>
-                </div>
-              </Link>
-            ))
-          )}
+          {animeList.map((anime) => (
+     <Link
+     key={anime.id}
+     to={{
+       pathname: `/anime/${anime.id}`,
+       search: `?title=${anime.attributes.canonicalTitle}&description=${anime.attributes.description}&image=${anime.attributes.posterImage.original}`
+     }}
+     className='card-link'
+   >
+     <div className='card'>
+       <img src={anime.attributes.posterImage.original} alt={anime.attributes.canonicalTitle} />
+       <div className="desc">
+         <p className='title'>{anime.attributes.canonicalTitle}</p>
+         <p className='click'>Click to see more</p>
+       </div>
+     </div>
+   </Link>
+          ))}
         </div>
       </div>
     </>

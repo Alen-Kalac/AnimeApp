@@ -1,0 +1,38 @@
+.anime-detail-container{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 20px;
+
+    .top{
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        padding-bottom: 50px;
+        h1{
+          
+            text-align: center;
+            font-size: 2.5rem;
+            text-decoration: underline ;
+            text-underline-offset: 10px;
+            text-decoration-color: lightcoral;
+                }
+       
+        
+    }
+    .bottom{
+        width: 100%;
+        display: flex;
+        align-items: center;
+        img{
+            object-fit: contain;
+            width: 30%;
+        }
+        p{
+            padding-left: 30px;
+            font-size: 1.2rem;
+        }
+       
+    }
+}
