@@ -1,4 +1,5 @@
 import React from "react";
+
 import "./index.scss";
 import { useLocation, useParams } from "react-router-dom";
 
@@ -22,4 +23,6 @@ function AnimeDetailPage() {
   );
 }
 
+
 export default AnimeDetailPage;
+
