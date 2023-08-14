@@ -9,6 +9,7 @@ import FavoritesPage from './Pages/Favorites'
 import MangaPage from './Pages/Manga'
 import SideBar from './Components/Sidebar'
 import AnimeDetailsPage from './Pages/AnimeDetailsPage'
+import FloatingArrow from './Components/ScrollToTop'
 function App() {
 
   return (
@@ -25,6 +26,7 @@ function App() {
     <Route path='/about-us' element={<AboutUsPage/>}/>
     <Route path="/anime/:id" element={<AnimeDetailsPage />} />
     </Routes>
+    <FloatingArrow/>
     <Footer/>
     </div>
     </div>
