@@ -3,12 +3,15 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 import { BrowserRouter } from 'react-router-dom'
+import { AppContextProvider } from './Context';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <BrowserRouter> 
-   <React.StrictMode>
+  <AppContextProvider>
+<React.StrictMode>
+  <BrowserRouter>
     <App />
-  </React.StrictMode>
   </BrowserRouter>
+</React.StrictMode>
+</AppContextProvider>
 
 )
